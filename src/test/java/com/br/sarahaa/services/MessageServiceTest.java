@@ -12,9 +12,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
@@ -56,12 +53,19 @@ public class MessageServiceTest {
     @Test(expected = ObjectValidationException.class)
     public void shouldThrowObjectValidationExceptionIfNoContent() {
         //given
-
+        UserDto userToSave = UserDto.builder()
+                .firstName("abdou")
+                .lastName("cher")
+                .birthDate(LocalDate.of(1995, 06, 22))
+                .email("a_abdou@beyn.com")
+                .password("12345678")
+                .build();
+        UserDto savedUser = userService.save(userToSave);
         MessageDto messageToSave = MessageDto.builder()
                 //.content("hellow from unit test")
                 .favori(false)
                 .publicMsg(false)
-                .receiverId(1)
+                .receiverId(savedUser.getId())
                 .typeMsg("SENT_MSG")
                 .build();
         //when
@@ -102,6 +106,8 @@ public class MessageServiceTest {
     }
     @Test(expected = EntityNotFoundException.class)
     public void shouldThrowNotFoundExceptionIfIdMessageUknown(){
+
+
         messageService.publishMessage(-1);
     }
 }
